@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lectura de Ventas — Análisis Retail 2024</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+<style>
+:root{
+  --crema: #f1ebe0;
+  --recibo: #fbf8f2;
+  --tinta: #2b261e;
+  --tinta-suave: #5c5448;
+  --mostaza: #d99a35;
+  --mostaza-fuerte: #b87a1c;
+  --petroleo: #3b6e8f;
+  --petroleo-suave: #c9dde7;
+  --salvia: #6b8f6b;
+  --linea: #d8cdb8;
+  --rojo-alerta: #a8503f;
+}
+
+*{box-sizing:border-box; margin:0; padding:0;}
+
+html{scroll-behavior:smooth;}
+
+body{
+  background:var(--crema);
+  color:var(--tinta);
+  font-family:'Inter', sans-serif;
+  line-height:1.55;
+}
+
+::selection{background:var(--mostaza); color:var(--recibo);}
+
+.wrap{
+  max-width:980px;
+  margin:0 auto;
+  padding:0 28px;
+}
+
+/* ===== HERO ===== */
+.hero{
+  position:relative;
+  padding:90px 0 70px;
+  border-bottom:1px solid var(--linea);
+  overflow:hidden;
+}
+
+.hero-eyebrow{
+  font-family:'Space Mono', monospace;
+  font-size:12.5px;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--mostaza-fuerte);
+  margin-bottom:18px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.hero-eyebrow .dot{
+  width:7px; height:7px; border-radius:50%;
+  background:var(--mostaza-fuerte);
+  animation:pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes pulse{
+  0%,100%{opacity:1; transform:scale(1);}
+  50%{opacity:0.4; transform:scale(0.8);}
+}
+
+.hero h1{
+  font-family:'Fraunces', serif;
+  font-weight:600;
+  font-size:clamp(2.6rem, 6vw, 4.6rem);
+  line-height:1.02;
+  letter-spacing:-0.01em;
+  max-width:850px;
+}
+
+.hero h1 em{
+  font-style:italic;
+  font-weight:400;
+  color:var(--petroleo);
+}
+
+.hero-sub{
+  margin-top:24px;
+  max-width:560px;
+  font-size:1.08rem;
+  color:var(--tinta-suave);
+}
+
+.ticker{
+  margin-top:56px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:0;
+  border-top:1px solid var(--tinta);
+  border-bottom:1px solid var(--tinta);
+}
+
+.ticker-item{
+  flex:1;
+  min-width:150px;
+  padding:18px 20px;
+  border-right:1px solid var(--linea);
+}
+
+.ticker-item:last-child{border-right:none;}
+
+.ticker-num{
+  font-family:'Space Mono', monospace;
+  font-weight:700;
+  font-size:1.9rem;
+  color:var(--tinta);
+  display:block;
+}
+
+.ticker-num.accent{color:var(--mostaza-fuerte);}
+
+.ticker-label{
+  font-size:0.78rem;
+  color:var(--tinta-suave);
+  text-transform:uppercase;
+  letter-spacing:0.05em;
+  margin-top:4px;
+  display:block;
+}
+
+/* ===== SECTIONS ===== */
+section{
+  padding:64px 0;
+  border-bottom:1px solid var(--linea);
+}
+
+.section-head{
+  display:flex;
+  align-items:baseline;
+  gap:16px;
+  margin-bottom:36px;
+}
+
+.section-tag{
+  font-family:'Space Mono', monospace;
+  font-size:0.78rem;
+  color:var(--mostaza-fuerte);
+  white-space:nowrap;
+  border:1px solid var(--mostaza-fuerte);
+  border-radius:3px;
+  padding:3px 8px;
+}
+
+.section-head h2{
+  font-family:'Fraunces', serif;
+  font-weight:600;
+  font-size:1.9rem;
+}
+
+.lead{
+  max-width:640px;
+  color:var(--tinta-suave);
+  margin-bottom:36px;
+  font-size:1.02rem;
+}
+
+/* ===== STAT CARDS ===== */
+.stat-grid{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:18px;
+  margin-bottom:36px;
+}
+
+.stat-card{
+  background:var(--recibo);
+  border:1px solid var(--linea);
+  border-radius:6px;
+  padding:22px 20px;
+}
+
+.stat-card h3{
+  font-family:'Space Mono', monospace;
+  font-size:0.82rem;
+  text-transform:uppercase;
+  letter-spacing:0.04em;
+  color:var(--petroleo);
+  margin-bottom:14px;
+  border-bottom:1px dashed var(--linea);
+  padding-bottom:10px;
+}
+
+.stat-row{
+  display:flex;
+  justify-content:space-between;
+  font-size:0.92rem;
+  padding:4px 0;
+}
+
+.stat-row span:first-child{color:var(--tinta-suave);}
+.stat-row span:last-child{
+  font-family:'Space Mono', monospace;
+  font-weight:700;
+}
+
+/* ===== CHART CONTAINERS ===== */
+.chart-box{
+  background:var(--recibo);
+  border:1px solid var(--linea);
+  border-radius:6px;
+  padding:20px 14px 8px;
+  margin-bottom:24px;
+}
+
+.chart-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+
+@media (max-width: 760px){
+  .chart-row{grid-template-columns:1fr;}
+  .stat-grid{grid-template-columns:1fr;}
+}
+
+.insight-box{
+  background:var(--petroleo-suave);
+  border-left:3px solid var(--petroleo);
+  border-radius:4px;
+  padding:18px 22px;
+  font-size:0.96rem;
+  margin-top:18px;
+}
+
+.insight-box strong{color:var(--petroleo);}
+
+.insight-box.warn{
+  background:#f4e3da;
+  border-left-color:var(--mostaza-fuerte);
+}
+.insight-box.warn strong{color:var(--mostaza-fuerte);}
+
+/* ===== CORRELATION TABLE ===== */
+.corr-table{
+  width:100%;
+  border-collapse:collapse;
+  font-family:'Space Mono', monospace;
+  font-size:0.9rem;
+}
+
+.corr-table th, .corr-table td{
+  border:1px solid var(--linea);
+  padding:10px 14px;
+  text-align:center;
+}
+
+.corr-table th{
+  background:var(--tinta);
+  color:var(--recibo);
+  font-weight:400;
+}
+
+/* ===== FOOTER ===== */
+footer{
+  padding:48px 0 60px;
+  font-family:'Space Mono', monospace;
+  font-size:0.8rem;
+  color:var(--tinta-suave);
+}
+
+footer a{color:var(--petroleo);}
+
+/* numbered eyebrow markers */
+.num-marker{
+  font-family:'Space Mono', monospace;
+  color:var(--mostaza-fuerte);
+}
+</style>
+</head>
+<body>
+
+<div class="wrap hero">
+  <div class="hero-eyebrow"><span class="dot"></span> ANÁLISIS DE VENTAS · AÑO 2024</div>
+  <h1>Lo que las <em>3.000 ventas</em><br>del año nos dejaron ver.</h1>
+  <p class="hero-sub">Estadística descriptiva, correlaciones y cruce con campañas de marketing sobre el catálogo de Decoración, Electrodomésticos y Electrónica.</p>
+
+  <div class="ticker">
+    <div class="ticker-item">
+      <span class="ticker-num">$1.47M</span>
+      <span class="ticker-label">Ventas totales del año</span>
+    </div>
+    <div class="ticker-item">
+      <span class="ticker-num">$489</span>
+      <span class="ticker-label">Ticket promedio</span>
+    </div>
+    <div class="ticker-item">
+      <span class="ticker-num accent">0.77</span>
+      <span class="ticker-label">Correlación cantidad↔venta</span>
+    </div>
+    <div class="ticker-item">
+      <span class="ticker-num accent">+0%</span>
+      <span class="ticker-label">Suba de ticket en campaña</span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<section id="estadistica">
+  <div class="section-head">
+    <span class="section-tag">01</span>
+    <h2>Estadística descriptiva</h2>
+  </div>
+  <p class="lead">Medidas de tendencia central y dispersión sobre las tres variables clave de cada transacción: precio unitario, cantidad vendida y monto total.</p>
+
+  <div class="stat-grid" id="stat-cards"></div>
+</section>
+
+<section id="eda">
+  <div class="section-head">
+    <span class="section-tag">02</span>
+    <h2>Distribución y forma de los datos</h2>
+  </div>
+  <p class="lead">Histogramas y boxplots de las tres variables. El precio y la cantidad se reparten de forma pareja; el monto total de cada venta, al ser un producto de ambas, se concentra en valores bajos con una cola de transacciones grandes.</p>
+
+  <div class="chart-row">
+    <div class="chart-box" id="chart-hist"></div>
+    <div class="chart-box" id="chart-box"></div>
+  </div>
+
+  <div class="insight-box">
+    <strong>Hallazgo —</strong> se identificaron <strong id="n-outliers"></strong> transacciones atípicas (outliers) sobre <strong id="n-total"></strong> analizadas, todas por monto total inusualmente alto, nunca por precio o cantidad aislados.
+  </div>
+</section>
+
+<section id="correlacion">
+  <div class="section-head">
+    <span class="section-tag">03</span>
+    <h2>¿Qué mueve el monto de una venta?</h2>
+  </div>
+  <p class="lead">Mapa de calor de correlación entre las tres variables numéricas.</p>
+
+  <div class="chart-row">
+    <div class="chart-box" id="chart-heatmap"></div>
+    <div>
+      <table class="corr-table" id="corr-table-html"></table>
+      <div class="insight-box">
+        La <strong>cantidad</strong> explica mucho más el monto final que el <strong>precio</strong>. Vender más unidades pesa más que vender más caro.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="consolidacion">
+  <div class="section-head">
+    <span class="section-tag">04</span>
+    <h2>Ventas dentro y fuera de campaña</h2>
+  </div>
+  <p class="lead">Cruzando cada venta con las campañas de marketing activas para ese producto en esa fecha, se compara el comportamiento de compra dentro y fuera de los períodos de campaña.</p>
+
+  <div class="chart-row">
+    <div class="chart-box" id="chart-campana-categoria"></div>
+    <div class="chart-box" id="chart-canal"></div>
+  </div>
+
+  <div class="insight-box warn">
+    <strong>El dato que importa —</strong> el ticket promedio dentro de campaña ($496,70) es prácticamente igual al de fuera de campaña ($486,83). Las campañas no estarían empujando a gastar más por compra; si tienen efecto, hay que buscarlo en el volumen de transacciones, no en el monto de cada una.
+  </div>
+</section>
+
+<section id="tendencia">
+  <div class="section-head">
+    <span class="section-tag">05</span>
+    <h2>El año, mes a mes</h2>
+  </div>
+  <p class="lead">Evolución de las ventas totales a lo largo de 2024, sin estacionalidad marcada pero con picos en marzo y mayo.</p>
+
+  <div class="chart-box" id="chart-tendencia"></div>
+</section>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    Análisis realizado en Python (pandas, seaborn, plotly) — Comisión 26109, Data Analytics con Python.<br>
+    Fuente: datasets de ventas, clientes y marketing del catálogo retail 2024.
+  </div>
+</footer>
+
+<script>
+const D = {"stats": {"precio": {"media": 75.29, "mediana": 75.2, "moda": 29.77, "desv_std": 28.74, "q1": 50.03, "q3": 100.07, "iqr": 50.04}, "cantidad": {"media": 6.5, "mediana": 7.0, "moda": 11.0, "desv_std": 3.46, "q1": 3.0, "q3": 9.0, "iqr": 6.0}, "venta_total_transaccion": {"media": 489.36, "mediana": 418.06, "moda": 345.33, "desv_std": 334.28, "q1": 220.92, "q3": 709.92, "iqr": 489.0}}, "corr": {"precio": {"precio": 1.0, "cantidad": -0.002, "venta_total_transaccion": 0.559}, "cantidad": {"precio": -0.002, "cantidad": 1.0, "venta_total_transaccion": 0.773}, "venta_total_transaccion": {"precio": 0.559, "cantidad": 0.773, "venta_total_transaccion": 1.0}}, "tendencia_mensual": [{"mes_nombre": "Ene", "venta_total_transaccion": 129604.99}, {"mes_nombre": "Feb", "venta_total_transaccion": 118672.44}, {"mes_nombre": "Mar", "venta_total_transaccion": 136779.15}, {"mes_nombre": "Abr", "venta_total_transaccion": 128430.69}, {"mes_nombre": "May", "venta_total_transaccion": 143727.25}, {"mes_nombre": "Jun", "venta_total_transaccion": 108480.17}, {"mes_nombre": "Jul", "venta_total_transaccion": 116229.97}, {"mes_nombre": "Ago", "venta_total_transaccion": 119680.15}, {"mes_nombre": "Sep", "venta_total_transaccion": 115787.85}, {"mes_nombre": "Oct", "venta_total_transaccion": 112117.13}, {"mes_nombre": "Nov", "venta_total_transaccion": 119951.79}, {"mes_nombre": "Dic", "venta_total_transaccion": 117631.94}], "cat_campana": [{"categoria": "Decoración", "estado_campana": "Dentro de campaña", "venta_total_transaccion": 131802.05}, {"categoria": "Decoración", "estado_campana": "Fuera de campaña", "venta_total_transaccion": 347414.04}, {"categoria": "Electrodomésticos", "estado_campana": "Dentro de campaña", "venta_total_transaccion": 120713.32}, {"categoria": "Electrodomésticos", "estado_campana": "Fuera de campaña", "venta_total_transaccion": 384586.31}, {"categoria": "Electrónica", "estado_campana": "Dentro de campaña", "venta_total_transaccion": 128953.3}, {"categoria": "Electrónica", "estado_campana": "Fuera de campaña", "venta_total_transaccion": 353624.5}], "comparacion_campana": [{"estado_campana": "Dentro de campaña", "ventas_totales": 381468.67, "ticket_promedio": 496.7, "n_transacciones": 768}, {"estado_campana": "Fuera de campaña", "ventas_totales": 1085624.85, "ticket_promedio": 486.83, "n_transacciones": 2230}], "efectividad_canal": [{"canal": "Email", "ventas_en_campana": 152161.04, "costo_total": 1502.02, "retorno_aprox": 101.3}, {"canal": "RRSS", "ventas_en_campana": 125449.52, "costo_total": 1341.44, "retorno_aprox": 93.52}, {"canal": "TV", "ventas_en_campana": 139197.11, "costo_total": 1376.78, "retorno_aprox": 101.1}], "ventas_categoria": [{"categoria": "Decoración", "venta_total_transaccion": 479216.09}, {"categoria": "Electrodomésticos", "venta_total_transaccion": 505299.63}, {"categoria": "Electrónica", "venta_total_transaccion": 482577.8}], "top_productos": [{"producto": "Lámpara de mesa", "venta_total_transaccion": 82276.38}, {"producto": "Auriculares", "venta_total_transaccion": 74175.58}, {"producto": "Microondas", "venta_total_transaccion": 72562.89}, {"producto": "Cafetera", "venta_total_transaccion": 59607.31}, {"producto": "Cuadro decorativo", "venta_total_transaccion": 54297.6}, {"producto": "Smartphone", "venta_total_transaccion": 54132.44}, {"producto": "Secadora", "venta_total_transaccion": 52115.45}, {"producto": "Jarrón decorativo", "venta_total_transaccion": 51130.88}, {"producto": "Batidora", "venta_total_transaccion": 50979.2}, {"producto": "Rincón de plantas", "venta_total_transaccion": 50456.45}], "n_outliers": 9, "n_total": 2998, "hist_data": {"precio": {"counts": [212, 202, 196, 205, 191, 195, 212, 201, 208, 187, 196, 182, 206, 201, 204], "bin_edges": [26.0, 32.6, 39.2, 45.79, 52.39, 58.99, 65.59, 72.19, 78.78, 85.38, 91.98, 98.58, 105.18, 111.77, 118.37, 124.97]}, "cantidad": {"counts": [261, 260, 238, 0, 218, 259, 242, 0, 262, 250, 264, 0, 241, 275, 228], "bin_edges": [1.0, 1.73, 2.47, 3.2, 3.93, 4.67, 5.4, 6.13, 6.87, 7.6, 8.33, 9.07, 9.8, 10.53, 11.27, 12.0]}, "venta_total_transaccion": {"counts": [414, 337, 363, 381, 307, 226, 217, 193, 158, 122, 96, 57, 60, 48, 19], "bin_edges": [26.3, 123.75, 221.21, 318.66, 416.12, 513.57, 611.03, 708.48, 805.94, 903.39, 1000.85, 1098.3, 1195.76, 1293.21, 1390.67, 1488.12]}}, "box_data": {"precio": {"min": 26.0, "q1": 50.03, "median": 75.2, "q3": 100.07, "max": 124.97, "outliers": []}, "cantidad": {"min": 1.0, "q1": 3.0, "median": 7.0, "q3": 9.0, "max": 12.0, "outliers": []}, "venta_total_transaccion": {"min": 26.3, "q1": 220.92, "median": 418.06, "q3": 709.92, "max": 1440.24, "outliers": [1452.0, 1461.24, 1464.24, 1488.12, 1483.2, 1485.96, 1449.48, 1480.8, 1458.72]}}};
+
+const FONT = "'Inter', sans-serif";
+const palette = {petroleo:'#3b6e8f', mostaza:'#d99a35', mostazaFuerte:'#b87a1c', salvia:'#6b8f6b', tinta:'#2b261e', linea:'#d8cdb8'};
+
+const baseLayout = {
+  font:{family:FONT, color:'#2b261e', size:12.5},
+  paper_bgcolor:'rgba(0,0,0,0)',
+  plot_bgcolor:'rgba(0,0,0,0)',
+  margin:{t:36, l:46, r:20, b:42},
+  hoverlabel:{bgcolor:'#2b261e', font:{color:'#fbf8f2', family:FONT}}
+};
+const cfg = {displayModeBar:false, responsive:true};
+
+// ---- Stat cards ----
+const statLabels = {precio:'Precio', cantidad:'Cantidad', venta_total_transaccion:'Venta total'};
+const statUnit = {precio:'$', cantidad:'u', venta_total_transaccion:'$'};
+let cardsHtml = '';
+for(const key of ['precio','cantidad','venta_total_transaccion']){
+  const s = D.stats[key];
+  const u = statUnit[key];
+  cardsHtml += `<div class="stat-card">
+    <h3>${statLabels[key]}</h3>
+    <div class="stat-row"><span>Media</span><span>${u}${s.media}</span></div>
+    <div class="stat-row"><span>Mediana</span><span>${u}${s.mediana}</span></div>
+    <div class="stat-row"><span>Moda</span><span>${u}${s.moda}</span></div>
+    <div class="stat-row"><span>Desv. estándar</span><span>${u}${s.desv_std}</span></div>
+    <div class="stat-row"><span>Rango intercuart. (IQR)</span><span>${u}${s.iqr}</span></div>
+  </div>`;
+}
+document.getElementById('stat-cards').innerHTML = cardsHtml;
+document.getElementById('n-outliers').textContent = D.n_outliers;
+document.getElementById('n-total').textContent = D.n_total;
+
+// ---- Histogram (venta_total_transaccion) ----
+(function(){
+  const h = D.hist_data.venta_total_transaccion;
+  const centers = h.bin_edges.slice(0,-1).map((e,i)=> (e + h.bin_edges[i+1])/2 );
+  Plotly.newPlot('chart-hist', [{
+    x: centers, y: h.counts, type:'bar',
+    marker:{color: palette.petroleo, line:{color:'#2b261e', width:0.5}},
+    hovertemplate:'Venta total ≈ $%{x:.0f}<br>Frecuencia: %{y}<extra></extra>'
+  }], {...baseLayout, title:{text:'Distribución de venta total por transacción', font:{size:13.5}}, xaxis:{title:'Venta total ($)'}, yaxis:{title:'Frecuencia'}}, cfg);
+})();
+
+// ---- Boxplot (3 vars normalizado en subplots simulados con 3 traces) ----
+(function(){
+  const traces = [];
+  const cols = ['precio','cantidad','venta_total_transaccion'];
+  const names = ['Precio','Cantidad','Venta total'];
+  const colors = [palette.mostaza, palette.salvia, palette.petroleo];
+  cols.forEach((c,i)=>{
+    const b = D.box_data[c];
+    traces.push({
+      type:'box', name:names[i],
+      q1:[b.q1], median:[b.median], q3:[b.q3], lowerfence:[b.min], upperfence:[b.max],
+      x: [names[i]],
+      marker:{color:colors[i]}, fillcolor:colors[i], opacity:0.85,
+      boxpoints: b.outliers.length ? 'outliers' : false,
+      y: b.outliers.length ? b.outliers.map(()=>names[i]) : undefined
+    });
+  });
+  Plotly.newPlot('chart-box', traces, {...baseLayout, title:{text:'Boxplots por variable', font:{size:13.5}}, showlegend:false, xaxis:{title:''}}, cfg);
+})();
+
+// ---- Heatmap correlación ----
+(function(){
+  const vars = ['precio','cantidad','venta_total_transaccion'];
+  const labels = ['Precio','Cantidad','Venta total'];
+  const z = vars.map(r => vars.map(c => D.corr[r][c]));
+  Plotly.newPlot('chart-heatmap', [{
+    z: z, x: labels, y: labels, type:'heatmap',
+    colorscale: [[0,'#3b6e8f'],[0.5,'#fbf8f2'],[1,'#b87a1c']],
+    zmin:-1, zmax:1,
+    text: z.map(row=>row.map(v=>v.toFixed(2))),
+    texttemplate:'%{text}',
+    hovertemplate:'%{y} ↔ %{x}: %{z:.2f}<extra></extra>',
+    colorbar:{thickness:12}
+  }], {...baseLayout, title:{text:'Correlación entre variables', font:{size:13.5}}}, cfg);
+})();
+
+// ---- Tabla correlación HTML ----
+(function(){
+  const vars = ['precio','cantidad','venta_total_transaccion'];
+  const labels = {precio:'Precio', cantidad:'Cantidad', venta_total_transaccion:'Venta total'};
+  let html = '<tr><th></th>' + vars.map(v=>`<th>${labels[v]}</th>`).join('') + '</tr>';
+  vars.forEach(r=>{
+    html += `<tr><th>${labels[r]}</th>` + vars.map(c=>`<td>${D.corr[r][c].toFixed(2)}</td>`).join('') + '</tr>';
+  });
+  document.getElementById('corr-table-html').innerHTML = html;
+})();
+
+// ---- Ventas por categoría, dentro/fuera de campaña ----
+(function(){
+  const cats = [...new Set(D.cat_campana.map(d=>d.categoria))];
+  const estados = ['Dentro de campaña', 'Fuera de campaña'];
+  const colors = {'Dentro de campaña': palette.mostaza, 'Fuera de campaña': palette.petroleo};
+  const traces = estados.map(estado => ({
+    x: cats,
+    y: cats.map(cat => (D.cat_campana.find(d=>d.categoria===cat && d.estado_campana===estado)||{}).venta_total_transaccion || 0),
+    name: estado, type:'bar',
+    marker:{color: colors[estado]},
+    hovertemplate:'%{x}<br>$%{y:,.0f}<extra></extra>'
+  }));
+  Plotly.newPlot('chart-campana-categoria', traces, {...baseLayout, title:{text:'Ventas por categoría: dentro vs fuera de campaña', font:{size:13.5}}, barmode:'group', legend:{orientation:'h', y:-0.18}}, cfg);
+})();
+
+// ---- Efectividad por canal ----
+(function(){
+  const canales = D.efectividad_canal.map(d=>d.canal);
+  const retorno = D.efectividad_canal.map(d=>d.retorno_aprox);
+  Plotly.newPlot('chart-canal', [{
+    x: canales, y: retorno, type:'bar',
+    marker:{color:[palette.mostaza, palette.salvia, palette.petroleo]},
+    hovertemplate:'%{x}<br>Retorno aprox: %{y:.1f}x<extra></extra>'
+  }], {...baseLayout, title:{text:'Retorno aproximado por canal (ventas / costo)', font:{size:13.5}}, yaxis:{title:'Ventas $ por $ invertido'}}, cfg);
+})();
+
+// ---- Tendencia mensual ----
+(function(){
+  const meses = D.tendencia_mensual.map(d=>d.mes_nombre);
+  const ventas = D.tendencia_mensual.map(d=>d.venta_total_transaccion);
+  Plotly.newPlot('chart-tendencia', [{
+    x: meses, y: ventas, type:'scatter', mode:'lines+markers',
+    line:{color: palette.petroleo, width:2.5, shape:'spline'},
+    marker:{color: palette.mostazaFuerte, size:7},
+    fill:'tozeroy', fillcolor:'rgba(59,110,143,0.08)',
+    hovertemplate:'%{x}: $%{y:,.0f}<extra></extra>'
+  }], {...baseLayout, title:{text:'Ventas totales por mes — 2024', font:{size:13.5}}, yaxis:{title:'Ventas ($)'}}, cfg);
+})();
+</script>
+
+</body>
+</html>
