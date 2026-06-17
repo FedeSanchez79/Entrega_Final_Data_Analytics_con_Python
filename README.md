@@ -32,15 +32,6 @@ Evolución de las ventas totales mes a mes durante 2024.
 - Los gráficos se generan con **[Plotly.js](https://plotly.com/javascript/)** (cargado desde un CDN), por lo que son interactivos: se puede pasar el mouse sobre los puntos, filtrar series desde la leyenda y hacer zoom.
 - La tipografía se carga desde Google Fonts (Fraunces, Space Mono e Inter).
 
-## 🚀 Cómo publicarla
-
-Al ser un solo archivo HTML, se puede subir tal cual a:
-
-- **GitHub Pages** → subir el archivo al repo (renombrado a `index.html` si va en la raíz) y activar Pages en la configuración del repositorio.
-- **Vercel** → arrastrar la carpeta o el archivo al deploy de Vercel.
-- **Google Sites** → insertar el contenido embebido o linkear el archivo alojado.
-
-No requiere build ni instalación de dependencias: abrir el `.html` en cualquier navegador también funciona en local.
 
 ## 🎨 Sobre el diseño
 
