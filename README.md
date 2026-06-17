@@ -53,4 +53,4 @@ No requiere build ni instalación de dependencias: abrir el `.html` en cualquier
 
 ## 🎨 Sobre el diseño
 
-La estética toma como referencia un recibo/ticket de venta: fondo crema, tipografía monoespaciada para los números y acentos en mostaza y azul petróleo, en línea con la temática retail del dataset (ventas, productos, campañas).
+La estética es un dashboard oscuro estilo panel de control (neumorphism dark): fondo casi negro con tarjetas en relieve sutil, tipografía técnica (Space Grotesk para títulos, Space Mono para los datos) y acentos en colores neón (rosa, celeste, violeta y naranja) que distinguen cada serie de datos y dan sensación de panel SaaS/admin moderno.
